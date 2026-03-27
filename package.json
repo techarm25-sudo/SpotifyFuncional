@@ -1,0 +1,17 @@
+{
+  "name": "listas-spotify",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "cors": "^2.8.6",
+    "express": "^4.22.1",
+    "node-fetch": "^2.6.7",
+    "spotify-url-info": "^3.3.0",
+    "yt-search": "^2.13.1"
+  }
+}
