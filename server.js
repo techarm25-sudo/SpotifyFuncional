@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 
 // Servir archivos estáticos (HTML, CSS, JS)
 const publicPath = path.resolve(__dirname);
-app.use(express.static(publicPath));
+console.log('Archivos en publicPath:', fs.readdirSync(publicPath));
 
 // Carpeta temporal para descargas
 const DOWNLOADS_DIR = path.join(publicPath, 'temp_downloads');
