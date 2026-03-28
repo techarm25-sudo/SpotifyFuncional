@@ -133,13 +133,14 @@ app.get("/get-zip", (req, res) => {
 });
 
 // Ruta de búsqueda (opcional)
-app.get("/search", async (req, res) => {
-    try {
-        const result = await yts(req.query.q || "");
-        res.json(result.videos.slice(0, 5).map(v => ({ title: v.title, url: v.url, thumbnail: v.thumbnail })));
-    } catch (e) {
-        res.status(500).json({ error: "Fallo en la búsqueda" });
-    }
+app.get('/', (req, res) => {
+    const filePath = path.join(__dirname, 'index.html');
+    res.sendFile(filePath, (err) => {
+        if (err) {
+            console.error('Error al enviar index.html:', err);
+            res.status(500).send('No se pudo cargar la página');
+        }
+    });
 });
 
 // PUERTO DINÁMICO (clave para Railway)
