@@ -1,7 +1,7 @@
 {
-  "name": "listas-spotify",
+  "name": "spotify-functional",
   "version": "1.0.0",
-  "description": "",
+  "description": "Descargador de listas de Spotify y YouTube",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

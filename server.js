@@ -6,7 +6,7 @@ const path = require("path");
 const fs = require("fs");
 const archiver = require("archiver");
 
-// Configuración de Spotify con manejo de errores
+// Spotify
 let getTracks;
 try {
     const fetch = require('node-fetch');
@@ -24,15 +24,15 @@ app.use((req, res, next) => {
     next();
 });
 
-// Servir archivos estáticos (HTML, CSS, JS)
+// Servir archivos estáticos (HTML, CSS, etc.)
 const publicPath = path.resolve(__dirname);
-console.log('Archivos en publicPath:', fs.readdirSync(publicPath));
+app.use(express.static(publicPath));
 
 // Carpeta temporal para descargas
 const DOWNLOADS_DIR = path.join(publicPath, 'temp_downloads');
 if (!fs.existsSync(DOWNLOADS_DIR)) fs.mkdirSync(DOWNLOADS_DIR);
 
-// Ruta principal: sirve index.html si existe, de lo contrario prueba.html
+// Ruta principal: sirve index.html
 app.get('/', (req, res) => {
     const filePath = path.join(__dirname, 'index.html');
     res.sendFile(filePath, (err) => {
@@ -112,39 +112,39 @@ app.get("/playlist-progress", async (req, res) => {
         archive.directory(folderPath, false);
         await archive.finalize();
 
-        // Eliminar carpeta temporal
         fs.rmSync(folderPath, { recursive: true, force: true });
-
     } catch (error) {
-        console.error("ERROR DEL SISTEMA:", error.message);
+        console.error("ERROR:", error.message);
         sendProgress({ status: "Error: " + error.message });
         res.end();
     }
 });
 
-// Ruta para descargar el ZIP
+// Ruta para descargar ZIP
 app.get("/get-zip", (req, res) => {
     const fileName = req.query.file;
     const filePath = path.join(DOWNLOADS_DIR, fileName);
     res.download(filePath, (err) => {
-        if (!err && fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
-        }
+        if (!err && fs.existsSync(filePath)) fs.unlinkSync(filePath);
     });
 });
 
-// Ruta de búsqueda (opcional)
-app.get('/', (req, res) => {
-    const filePath = path.join(__dirname, 'index.html');
-    res.sendFile(filePath, (err) => {
-        if (err) {
-            console.error('Error al enviar index.html:', err);
-            res.status(500).send('No se pudo cargar la página');
-        }
-    });
+// Ruta de búsqueda
+app.get("/search", async (req, res) => {
+    try {
+        const result = await yts(req.query.q || "");
+        res.json(result.videos.slice(0, 5).map(v => ({ title: v.title, url: v.url, thumbnail: v.thumbnail })));
+    } catch (e) {
+        res.status(500).json({ error: "Fallo en la búsqueda" });
+    }
 });
 
-// PUERTO DINÁMICO (clave para Railway)
+// Ruta de prueba (opcional)
+app.get('/ping', (req, res) => {
+    res.send('pong');
+});
+
+// Puerto dinámico para Railway
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log("============================================");
