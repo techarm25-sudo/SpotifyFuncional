@@ -34,12 +34,13 @@ if (!fs.existsSync(DOWNLOADS_DIR)) fs.mkdirSync(DOWNLOADS_DIR);
 
 // Ruta principal: sirve index.html si existe, de lo contrario prueba.html
 app.get('/', (req, res) => {
-    const indexFile = path.join(publicPath, 'index.html');
-    if (fs.existsSync(indexFile)) {
-        res.sendFile(indexFile);
-    } else {
-        res.sendFile(path.join(publicPath, 'prueba.html'));
-    }
+    const filePath = path.join(__dirname, 'index.html');
+    res.sendFile(filePath, (err) => {
+        if (err) {
+            console.error('Error al enviar index.html:', err);
+            res.status(500).send('No se pudo cargar la página');
+        }
+    });
 });
 
 // Ruta de progreso (EventSource)
